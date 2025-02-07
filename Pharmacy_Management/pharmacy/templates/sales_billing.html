@@ -1,0 +1,181 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Sales & Billing</h5>
+
+        <!-- Search Medicine -->
+        <div class="mb-3">
+            <input type="text" id="searchMedicine" class="form-control" placeholder="Search Medicine by Name or Barcode">
+        </div>
+
+        <!-- Medicines List (Dynamically Filtered) -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th>Stock</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Add</th>
+                </tr>
+            </thead>
+            <tbody id="medicineList">
+                {% for medicine in medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.category.name }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                    <td>{{ medicine.price }}</td>
+                    <td><input type="number" min="1" max="{{ medicine.quantity }}" class="form-control qty" data-id="{{ medicine.id }}" value="1"></td>
+                    <td><button class="btn btn-success add-to-cart" data-id="{{ medicine.id }}" data-name="{{ medicine.name }}" data-price="{{ medicine.price }}">Add</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Cart -->
+        <h5 class="mt-4">Selected Medicines</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody id="cartItems">
+                <!-- Items will be dynamically added here -->
+            </tbody>
+        </table>
+
+        <!-- Payment Section -->
+        <div class="row">
+            <div class="col-md-4">
+                <label>Discount (%)</label>
+                <input type="number" id="discount" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+                <label>Tax (%)</label>
+                <input type="number" id="tax" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+                <label>Total</label>
+                <input type="text" id="totalAmount" class="form-control" readonly>
+            </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="mt-3">
+            <label>Payment Method</label>
+            <select id="paymentMethod" class="form-control">
+                <option value="Cash">Cash</option>
+                <option value="Card">Card</option>
+                <option value="Digital Wallet">Digital Wallet</option>
+            </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-3">
+            <button class="btn btn-primary" id="processSale">Process Sale</button>
+            <button class="btn btn-secondary" id="printInvoice">Print Invoice</button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Handling Cart -->
+<script>
+    let cart = [];
+
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', function() {
+            let id = this.getAttribute('data-id');
+            let name = this.getAttribute('data-name');
+            let price = parseFloat(this.getAttribute('data-price'));
+            let quantity = parseInt(document.querySelector('.qty[data-id="'+id+'"]').value);
+
+            let existingItem = cart.find(item => item.id === id);
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ id, name, price, quantity });
+            }
+
+            updateCart();
+        });
+    });
+
+    function updateCart() {
+        let cartTable = document.getElementById('cartItems');
+        cartTable.innerHTML = "";
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            let subtotal = item.price * item.quantity;
+            total += subtotal;
+
+            cartTable.innerHTML += `
+                <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${subtotal.toFixed(2)}</td>
+                    <td><button class="btn btn-danger btn-sm" onclick="removeItem(${index})">X</button></td>
+                </tr>
+            `;
+        });
+
+        document.getElementById('totalAmount').value = total.toFixed(2);
+    }
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        updateCart();
+    }
+
+    document.getElementById('processSale').addEventListener('click', function() {
+        let discount = parseFloat(document.getElementById('discount').value) || 0;
+        let tax = parseFloat(document.getElementById('tax').value) || 0;
+        let paymentMethod = document.getElementById('paymentMethod').value;
+        let total = parseFloat(document.getElementById('totalAmount').value);
+
+        let cartData = cart.map(item => ({
+            id: item.id,
+            quantity: item.quantity,
+            price: item.price
+        }));
+
+        fetch("{% url 'sales_billing' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                discount: discount,
+                tax: tax,
+                payment_method: paymentMethod,
+                cart: cartData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message);
+            if (data.sale_id) {
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+    document.getElementById('printInvoice').addEventListener('click', function() {
+        window.print();
+    });
+</script>
+
+
+{% endblock %}

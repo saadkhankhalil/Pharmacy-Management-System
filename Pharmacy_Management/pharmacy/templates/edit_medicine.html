@@ -1,0 +1,76 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Edit Medicine</h5>
+        <div class="container-fluid">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Medicine Name</label>
+                            <input type="text" name="name" class="form-control" value="{{ medicine.name }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Category</label>
+                            <select name="category" class="form-control" required>
+                                <option value="">Select Category</option>
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if category.id == medicine.category.id %}selected{% endif %}>
+                                        {{ category.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Batch Number</label>
+                            <input type="text" name="batch_no" class="form-control" value="{{ medicine.batch_no }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Stock Quantity</label>
+                            <input type="number" name="quantity" class="form-control" value="{{ medicine.quantity }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Expiry Date</label>
+                            <input type="date" name="expiry_date" class="form-control" value="{{ medicine.expiry_date|date:'Y-m-d' }}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="text" name="price" class="form-control" value="{{ medicine.price }}" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Barcode (Optional)</label>
+                            <input type="text" name="barcode" class="form-control" value="{{ medicine.barcode }}">
+                        </div>
+                    </div>
+                </div>
+                <input type="submit" value="Update Medicine" class="m-2 px-3 btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if msg %}
+<script>
+    alert('{{ msg }}');
+</script>
+{% endif %}
+{% endblock %}

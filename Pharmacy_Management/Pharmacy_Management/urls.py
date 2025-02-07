@@ -28,5 +28,13 @@ urlpatterns = [
     path('delete-category/<int:pid>/', delete_category, name="delete_category"),
     path('add_medicine/', add_medicine, name="add_medicine"),
     path('view_medicine/', view_medicines, name="view_medicine"),
+    path('delete-medicine/<int:pid>/', delete_medicine, name="delete_medicine"),
+    path('edit-medicine/<int:pid>/', edit_medicine, name="edit_medicine"),
+    path('sales/', sales_billing, name='sales_billing'),
+    path('invoice/<int:sale_id>/', generate_invoice, name='generate_invoice'),
+    path('email-invoice/<int:sale_id>/', email_invoice, name='email_invoice'),
+    path('upload-prescription/', upload_prescription, name='upload_prescription'),
+    path('prescriptions/', prescription_list, name='prescription_list'),
+    path('link-prescription/<int:prescription_id>/', link_prescription_to_sale, name='link_prescription_to_sale'),
 
 ]
