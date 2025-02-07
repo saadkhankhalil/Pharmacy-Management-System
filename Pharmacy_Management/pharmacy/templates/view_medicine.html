@@ -1,0 +1,62 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">All Medicines</h5>
+
+        <!-- Search Form -->
+        <form method="GET" action="">
+            <div class="input-group mb-3">
+                <input type="text" name="q" class="form-control" placeholder="Search by Name or Barcode" 
+                       value="{{ request.GET.q }}">
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="container-fluid">
+            <table class="table table-bordered table-sm" id="example">
+                <thead>
+                <tr>
+                    <th>S.No.</th>                  
+                    <th>Medicine Name</th>
+                    <th>Category</th>
+                    <th>Batch No</th>
+                    <th>Quantity</th>
+                    <th>Expiry Date</th>
+                    <th>Price</th>
+                    <th>Barcode</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in medicines %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ i.name }}</td>
+                    <td>{{ i.category.name }}</td>
+                    <td>{{ i.batch_no }}</td>
+                    <td>{{ i.quantity }}</td>
+                    <td>{{ i.expiry_date }}</td>
+                    <td>{{ i.price }}</td>
+                    <td>{{ i.barcode|default:"N/A" }}</td>
+                    <td>
+                        <a href="/edit-medicine/{{ i.id }}/" class="text-success">Edit</a>
+                        <a href="/delete-medicine/{{ i.id }}/" class="text-danger" 
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" class="text-center text-danger">No medicines found</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
