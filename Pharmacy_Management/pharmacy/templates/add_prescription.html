@@ -1,0 +1,53 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Add Prescription</h5>
+        <div class="container-fluid">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Patient Name</label>
+                            <input type="text" name="patient_name" class="form-control" placeholder="Enter Patient Name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Doctor Name</label>
+                            <input type="text" name="doctor_name" class="form-control" placeholder="Enter Doctor Name" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Attach Prescription (PDF/Image)</label>
+                            <input type="file" name="prescription_file" class="form-control" accept=".jpg,.png,.pdf" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Additional Notes (Optional)</label>
+                            <textarea name="notes" class="form-control" rows="3" placeholder="Any additional details..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="submit" value="Save Prescription" class="m-2 px-3 btn btn-primary">
+            </form>
+        </div>
+    </div>
+</div>
+
+{% if msg %}
+<script>
+    alert('{{ msg }}')
+</script>
+{% endif %}
+
+{% endblock %}

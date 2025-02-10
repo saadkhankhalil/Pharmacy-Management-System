@@ -4,22 +4,31 @@
 <div class="card shadow">
     <div class="card-body">
         <h5 class="p-2" style="border-bottom: 2px solid orange;">Link Prescription to Sale</h5>
-
-        <form method="POST">
+        
+        <form action="" method="post">
             {% csrf_token %}
+            
             <div class="form-group">
-                <label>Medicine Name</label>
-                <input type="text" name="medicine_name" class="form-control" required>
+                <label>Select Sale</label>
+                <select name="sale_id" class="form-control" required>
+                    <option value="">Select Sale</option>
+                    {% for sale in sales %}
+                    <option value="{{ sale.id }}">Sale ID: {{ sale.id }} - {{ sale.date }}</option>
+                    {% endfor %}
+                </select>
             </div>
+
             <div class="form-group">
-                <label>Quantity</label>
-                <input type="number" name="quantity" class="form-control" required>
+                <label>Select Prescription</label>
+                <select name="prescription_id" class="form-control" required>
+                    <option value="">Select Prescription</option>
+                    {% for prescription in prescriptions %}
+                    <option value="{{ prescription.id }}">{{ prescription.patient_name }} - {{ prescription.prescription_date }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="form-group">
-                <label>Total Price</label>
-                <input type="text" name="total_price" class="form-control" required>
-            </div>
-            <input type="submit" value="Link Sale" class="btn btn-success">
+
+            <input type="submit" value="Link Prescription" class="m-2 px-3 btn btn-primary">
         </form>
     </div>
 </div>

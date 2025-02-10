@@ -19,7 +19,6 @@
                             <label>Category</label>
                             <select name="category" class="form-control" required>
                                 <option value="">Select Category</option>
-                                <!-- Dynamic categories from database -->
                                 {% for category in categories %}
                                 <option value="{{ category.id }}">{{ category.name }}</option>
                                 {% endfor %}
@@ -27,6 +26,7 @@
                         </div>
                     </div>
                 </div>
+            
                 <div class="form-row">
                     <div class="col-md-4">
                         <div class="form-group">
@@ -47,6 +47,7 @@
                         </div>
                     </div>
                 </div>
+            
                 <div class="form-row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -61,8 +62,20 @@
                         </div>
                     </div>
                 </div>
+            
+                <!-- New field for prescription requirement -->
+                <div class="form-row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="requires_prescription">Requires Prescription?</label>
+                            <input type="checkbox" name="requires_prescription" id="requires_prescription">
+                        </div>
+                    </div>
+                </div>
+            
                 <input type="submit" value="Submit" class="m-2 px-3 btn btn-primary">
             </form>
+            
         </div>
     </div>
 </div>

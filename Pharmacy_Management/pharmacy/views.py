@@ -7,7 +7,11 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from django.utils.html import strip_tags
 from django.views.decorators.csrf import csrf_exempt
-from .models import Medicine, Sale, SaleItem
+from django.contrib import messages
+from django.shortcuts import redirect
+
+from .models import *
+
 
 def adminHome(request):
     return render(request, 'admin_base.html')
@@ -46,18 +50,32 @@ def delete_category(request, pid):
 #Add Medicine
 def add_medicine(request):
     categories = Category.objects.all()
-    if request.method=="POST":
+    if request.method == "POST":
         name = request.POST['name']
         cat = request.POST['category']
-        bat_no = request.POST['batch_no']
+        batch_no = request.POST['batch_no']
         qty = request.POST['quantity']
         exp = request.POST['expiry_date']
         price = request.POST['price']
-        bar_code = request.POST['barcode']
+        barcode = request.POST.get('barcode', '')
+
+        requires_prescription = 'requires_prescription' in request.POST  # Check if checkbox is checked
+
         catobj = Category.objects.get(id=cat)
-        Medicine.objects.create(name=name,category=catobj,batch_no=bat_no,quantity=qty,expiry_date=exp,price=price,barcode=bar_code)
-        messages.success(request, "Medicine added")
+        Medicine.objects.create(
+            name=name,
+            category=catobj,
+            batch_no=batch_no,
+            quantity=qty,
+            expiry_date=exp,
+            price=price,
+            barcode=barcode,
+            requires_prescription=requires_prescription  # Save in DB
+        )
+        messages.success(request, "Medicine added successfully")
+    
     return render(request, 'add_medicine.html', locals())
+
 
 #View Category
 def view_medicines(request):
@@ -180,44 +198,73 @@ def email_invoice(request, sale_id):
     return JsonResponse({'message': 'Invoice emailed successfully'})
 
 
-
-# Upload Prescription
-def upload_prescription(request):
+def add_prescription(request):
     if request.method == "POST":
         patient_name = request.POST['patient_name']
         doctor_name = request.POST['doctor_name']
         notes = request.POST.get('notes', '')
+        prescription_file = request.FILES.get('prescription_file', None)
 
-        prescription_file = request.FILES.get('prescription_file')
-
-        prescription = Prescription(
+        prescription = Prescription.objects.create(
             patient_name=patient_name,
             doctor_name=doctor_name,
             notes=notes,
             prescription_file=prescription_file
         )
-        prescription.save()
-        messages.success(request, "Prescription uploaded successfully.")
-        return redirect('prescription_list')
 
-    return render(request, 'upload_prescription.html')
+        messages.success(request, "Prescription added successfully")
+        return redirect('view_prescriptions')
 
-# View Prescription History
-def prescription_list(request):
-    prescriptions = Prescription.objects.all().order_by('-prescription_date')
-    return render(request, 'prescription_list.html', {'prescriptions': prescriptions})
+    return render(request, 'add_prescription.html')
 
-# Link Prescription to Sale
-def link_prescription_to_sale(request, prescription_id):
-    prescription = get_object_or_404(Prescription, id=prescription_id)
+def view_prescriptions(request):
+    query = request.GET.get('q', '')
+    if query:
+        prescriptions = Prescription.objects.filter(patient_name__icontains=query)
+    else:
+        prescriptions = Prescription.objects.all()
+
+    return render(request, 'view_prescriptions.html', {'prescriptions': prescriptions})
+
+def link_prescription(request, sale_id=None):
+    sales = Sale.objects.all()  # Fetch all sales
+    prescriptions = Prescription.objects.filter(sale__isnull=True)  # Fetch only unlinked prescriptions
+
     if request.method == "POST":
-        medicine_name = request.POST['medicine_name']
-        quantity = int(request.POST['quantity'])
-        total_price = float(request.POST['total_price'])
+        sale_id = request.POST.get('sale_id')
+        prescription_id = request.POST.get('prescription_id')
 
-        sale = Sale(prescription=prescription, medicine_name=medicine_name, quantity=quantity, total_price=total_price)
-        sale.save()
-        messages.success(request, "Sale linked to prescription successfully.")
-        return redirect('prescription_list')
+        if not sale_id or not prescription_id:
+            messages.error(request, "Both Sale and Prescription must be selected.")
+            return redirect('link_prescription')  
 
-    return render(request, 'link_prescription.html', {'prescription': prescription})
+        sale = get_object_or_404(Sale, id=sale_id)
+        prescription = get_object_or_404(Prescription, id=prescription_id)
+
+        prescription.sale = sale
+        prescription.save()
+
+        messages.success(request, "Prescription linked successfully!")
+        return redirect('view_prescriptions')
+
+    return render(request, 'link_prescription.html', {'sales': sales, 'prescriptions': prescriptions})
+
+
+
+def search_prescriptions(request):
+    query = request.GET.get('q', '')
+
+    if query:
+        prescriptions = Prescription.objects.filter(
+            models.Q(patient_name__icontains=query) |
+            models.Q(doctor_name__icontains=query)
+        )
+    else:
+        prescriptions = Prescription.objects.all()
+
+    return render(request, 'search_prescriptions.html', {'prescriptions': prescriptions})
+
+
+
+
+

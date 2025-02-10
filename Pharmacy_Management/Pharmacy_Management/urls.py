@@ -33,8 +33,11 @@ urlpatterns = [
     path('sales/', sales_billing, name='sales_billing'),
     path('invoice/<int:sale_id>/', generate_invoice, name='generate_invoice'),
     path('email-invoice/<int:sale_id>/', email_invoice, name='email_invoice'),
-    path('upload-prescription/', upload_prescription, name='upload_prescription'),
-    path('prescriptions/', prescription_list, name='prescription_list'),
-    path('link-prescription/<int:prescription_id>/', link_prescription_to_sale, name='link_prescription_to_sale'),
+    path('prescriptions/add/', add_prescription, name='add_prescription'),
+    path('prescriptions/view/', view_prescriptions, name='view_prescriptions'),
+    path('prescriptions/link/<int:sale_id>/', link_prescription, name='link_prescription'),
+    path('prescriptions/search/', search_prescriptions, name='search_prescriptions'),
+ 
 
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

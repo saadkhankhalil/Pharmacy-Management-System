@@ -12,14 +12,16 @@ class Category(models.Model):
 class Medicine(models.Model):
     name = models.CharField(max_length=200)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    batch_no = models.CharField(max_length=50, )
+    batch_no = models.CharField(max_length=50)
     quantity = models.PositiveIntegerField()
     expiry_date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     barcode = models.CharField(max_length=100, blank=True, null=True)
+    requires_prescription = models.BooleanField(default=False)  # New field
 
     def __str__(self):
         return f"{self.name} - {self.batch_no}"
+
     
 
 
@@ -46,25 +48,23 @@ class SaleItem(models.Model):
     def __str__(self):
         return f"{self.medicine.name} - {self.quantity} pcs"
     
+
+    
 class Prescription(models.Model):
     patient_name = models.CharField(max_length=200)
     doctor_name = models.CharField(max_length=200)
     prescription_date = models.DateField(auto_now_add=True)
     prescription_file = models.FileField(upload_to='prescriptions/', null=True, blank=True)
     notes = models.TextField(blank=True, null=True)
+    sale = models.OneToOneField(Sale, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return f"Prescription for {self.patient_name} ({self.prescription_date})"
     
-class Sales(models.Model):
-    prescription = models.ForeignKey(Prescription, on_delete=models.SET_NULL, null=True, blank=True)
-    medicine_name = models.CharField(max_length=200)
-    quantity = models.PositiveIntegerField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    sale_date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Sale of {self.medicine_name} on {self.sale_date}"
+
+    
+
     
 
 
