@@ -63,6 +63,48 @@ class Prescription(models.Model):
     
 
 
+class Supplier(models.Model):
+    name = models.CharField(max_length=255)
+    contact_person = models.CharField(max_length=255, blank=True, null=True)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField(blank=True, null=True)
+    address = models.TextField()
+
+    def __str__(self):
+        return self.name
+
+class PurchaseOrder(models.Model):
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    order_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Completed', 'Completed')], default='Pending')
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.supplier.name}"
+
+class PurchaseItem(models.Model):
+    purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='items')
+    medicine = models.ForeignKey('Medicine', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def subtotal(self):
+        return self.quantity * self.price
+
+    def __str__(self):
+        return f"{self.medicine.name} - {self.quantity} pcs"
+
+class SupplierPayment(models.Model):
+    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_date = models.DateField(auto_now_add=True)
+    payment_method = models.CharField(max_length=50, choices=[('Cash', 'Cash'), ('Bank Transfer', 'Bank Transfer')])
+
+    def __str__(self):
+        return f"Payment {self.id} - {self.supplier.name}"
+    
+
+
     
 
     

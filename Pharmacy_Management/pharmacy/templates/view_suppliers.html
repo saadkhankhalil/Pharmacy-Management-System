@@ -1,0 +1,38 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Supplier List</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Contact Person</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for supplier in suppliers %}
+                <tr>
+                    <td>{{ supplier.name }}</td>
+                    <td>{{ supplier.contact_person }}</td>
+                    <td>{{ supplier.phone }}</td>
+                    <td>{{ supplier.email }}</td>
+                    <td>
+                        <a href="{% url 'edit_supplier' supplier.id %}" class="btn btn-sm btn-warning">Edit</a>
+                        <a href="{% url 'delete_supplier' supplier.id %}" class="btn btn-sm btn-danger">Delete</a>
+                        <a href="{% url 'make_payment' supplier.id %}" class="btn btn-sm btn-success">Make Payment</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No Suppliers Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

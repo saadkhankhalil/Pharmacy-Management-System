@@ -1,0 +1,34 @@
+{% extends 'admin_base.html' %}  
+{% block main %}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Make Payment</h5>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>Supplier:</label>
+                <input type="text" class="form-control" value="{{ supplier.name }}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Amount Paid:</label>
+                <input type="number" name="amount_paid" class="form-control" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Method:</label>
+                <select name="payment_method" class="form-control" required>
+                    <option value="Cash">Cash</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit Payment</button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

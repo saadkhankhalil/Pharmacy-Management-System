@@ -265,6 +265,107 @@ def search_prescriptions(request):
     return render(request, 'search_prescriptions.html', {'prescriptions': prescriptions})
 
 
+def add_supplier(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        contact_person = request.POST.get('contact_person')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        address = request.POST.get('address')
+
+        Supplier.objects.create(name=name, contact_person=contact_person, phone=phone, email=email, address=address)
+        messages.success(request, "Supplier added successfully!")
+        return redirect('view_suppliers')
+
+    return render(request, 'add_supplier.html')
+
+def view_suppliers(request):
+    suppliers = Supplier.objects.all()
+    return render(request, 'view_suppliers.html', {'suppliers': suppliers})
+
+
+def edit_supplier(request, supplier_id):
+    supplier = get_object_or_404(Supplier, id=supplier_id)
+
+    if request.method == "POST":
+        supplier.name = request.POST.get('name')
+        supplier.contact_person = request.POST.get('contact_person')
+        supplier.phone = request.POST.get('phone')
+        supplier.email = request.POST.get('email')
+        supplier.address = request.POST.get('address')
+        supplier.save()
+        messages.success(request, "Supplier updated successfully!")
+        return redirect('view_suppliers')
+
+    return render(request, 'edit_supplier.html', {'supplier': supplier})
+
+def delete_supplier(request, supplier_id):
+    supplier = get_object_or_404(Supplier, id=supplier_id)
+    supplier.delete()
+    messages.success(request, "Supplier deleted successfully!")
+    return redirect('view_suppliers')
+
+def create_purchase_order(request):
+    suppliers = Supplier.objects.all()
+
+    if request.method == "POST":
+        supplier_id = request.POST.get('supplier_id')
+        supplier = get_object_or_404(Supplier, id=supplier_id)
+
+        purchase_order = PurchaseOrder.objects.create(supplier=supplier)
+        messages.success(request, "Purchase Order created successfully!")
+        return redirect('view_purchase_orders')
+
+    return render(request, 'create_purchase_order.html', {'suppliers': suppliers})
+
+def view_purchase_orders(request):
+    orders = PurchaseOrder.objects.all()
+    return render(request, 'view_purchase_orders.html', {'orders': orders})
+
+from decimal import Decimal  # Import Decimal at the top
+
+def add_purchase_item(request, order_id):
+    order = get_object_or_404(PurchaseOrder, id=order_id)
+    medicines = Medicine.objects.all()
+
+    if request.method == "POST":
+        medicine_id = request.POST.get('medicine_id')
+        quantity = int(request.POST.get('quantity'))
+
+        # Fix: Convert price properly
+        price_str = request.POST.get('price', '0').replace(',', '')  
+        try:
+            price = Decimal(price_str)  # Convert to Decimal instead of float
+        except ValueError:
+            messages.error(request, "Invalid price format. Please enter a valid number.")
+            return redirect('add_purchase_item', order_id=order_id)
+
+        medicine = get_object_or_404(Medicine, id=medicine_id)
+        PurchaseItem.objects.create(purchase_order=order, medicine=medicine, quantity=quantity, price=price)
+        
+        # Fix: Ensure both operands are Decimals
+        order.total_amount += quantity * price  # Now both are Decimal
+        order.save()
+
+        messages.success(request, "Item added to purchase order!")
+        return redirect('view_purchase_orders')
+
+    return render(request, 'add_purchase_item.html', {'order': order, 'medicines': medicines})
 
 
 
+def make_payment(request, supplier_id):
+    supplier = get_object_or_404(Supplier, id=supplier_id)
+
+    if request.method == "POST":
+        amount_paid = float(request.POST.get('amount_paid'))
+        payment_method = request.POST.get('payment_method')
+
+        SupplierPayment.objects.create(supplier=supplier, amount_paid=amount_paid, payment_method=payment_method)
+        messages.success(request, "Payment recorded successfully!")
+        return redirect('view_suppliers')
+
+    return render(request, 'make_payment.html', {'supplier': supplier})
+
+def view_payment_tracking(request):
+    return render(request, 'view_payment_tracking.html') 

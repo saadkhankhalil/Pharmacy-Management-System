@@ -80,17 +80,35 @@
             </div>
 
         </li>
-
-
-       <li class="nav-item dropdown ">
+        
+        <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-dark bg-light" href="#" data-toggle="dropdown">
                 <i class="fas fa-truck mr-3 text-primary fa-fw"></i> Supplier & Purchase
             </a>
             <div class="dropdown-menu">
-                <a class="dropdown-item" href="#">Manage Suppliers</a>
-                <a class="dropdown-item" href="#">Purchase Orders</a>
+                <a class="dropdown-item" href="{% url 'add_supplier' %}">Add New Supplier</a>
+
+                <a class="dropdown-item" href="{% url 'view_suppliers' %}">Manage Suppliers</a>
+                <a class="dropdown-item" href="{% url 'add_purchase_item' order_id=1 %}">Add Purchase Orders</a>
+
+                <a class="dropdown-item" href="{% url 'view_purchase_orders' %}">Purchase Orders</a>
+
+               
+                {% if supplier.id %}
+                <a class="dropdown-item" href="{% url 'make_payment' supplier.id %}">Make Payment Orders</a>
+            {% else %}
+                <span class="dropdown-item text-muted">Make Payment Orders (Invalid Supplier)</span>
+            {% endif %}
+            
+                
+
+
+                <a class="dropdown-item" href="{% url 'view_payment_tracking' %}">Payment Tracking</a>  <!-- ✅ Fixed here -->
             </div>
         </li>
+        
+        
+        
 
 
        <li class="nav-item">

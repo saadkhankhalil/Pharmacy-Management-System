@@ -52,12 +52,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Pharmacy_Management.urls'
-
+import os
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'app/templates')],  # ✅ Make sure this is here!
+        'APP_DIRS': True,  # ✅ This must be True
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -68,6 +68,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'Pharmacy_Management.wsgi.application'
 
