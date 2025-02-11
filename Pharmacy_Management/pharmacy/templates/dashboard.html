@@ -1,6 +1,10 @@
 {% extends 'admin_base.html' %}
 {% block main %}
 
+
+<!-- Font Awesome 6 CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 <!-- Include Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -18,88 +22,113 @@
 </style>
 
 <div class="container-fluid">
-    <h2 class="text-center my-3">Pharmacy Management Dashboard</h2>
+    <h2 class="text-center my-3" style="color: #fff;">Pharmacy Management Dashboard</h2>
     <div class="row">
         <!-- Total Medicines -->
         <div class="col-md-3 p-2">
             <div class="card bg-primary text-white shadow">
-                <div class="card-body">
-                    <h5>Total Medicines</h5>
-                    <h3 class="counter" id="total_medicines" data-value="{{ total_medicines }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Medicines</h5>
+                        <h3 class="counter" id="total_medicines" data-value="{{ total_medicines }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-pills fa-2x"></i> <!-- Fixed icon -->
                 </div>
             </div>
         </div>
+        
+        
 
         <!-- Total Categories -->
         <div class="col-md-3 p-2">
             <div class="card bg-success text-white shadow">
-                <div class="card-body">
-                    <h5>Total Categories</h5>
-                    <h3 class="counter" id="total_categories" data-value="{{ total_categories }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Categories</h5>
+                        <h3 class="counter" id="total_categories" data-value="{{ total_categories }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-list fa-2x"></i> <!-- Corrected icon placement -->
                 </div>
             </div>
         </div>
+        
 
         <!-- Total Suppliers -->
         <div class="col-md-3 p-2">
             <div class="card bg-warning text-dark shadow">
-                <div class="card-body">
-                    <h5>Total Suppliers</h5>
-                    <h3 class="counter" id="total_suppliers" data-value="{{ total_suppliers }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Suppliers</h5>
+                        <h3 class="counter" id="total_suppliers" data-value="{{ total_suppliers }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-truck fa-2x"></i> <!-- Corrected icon -->
                 </div>
             </div>
         </div>
-
+        
         <!-- Total Sales -->
         <div class="col-md-3 p-2">
             <div class="card bg-danger text-white shadow">
-                <div class="card-body">
-                    <h5>Total Sales</h5>
-                    <h3 class="counter" id="total_sales" data-value="{{ total_sales }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Sales</h5>
+                        <h3 class="counter" id="total_sales" data-value="{{ total_sales }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-chart-line fa-2x"></i> <!-- Corrected icon -->
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row">
+        
         <!-- Revenue -->
         <div class="col-md-4 p-2">
             <div class="card bg-dark text-white shadow">
-                <div class="card-body">
-                    <h5>Total Revenue</h5>
-                    <h3 class="counter" id="total_revenue" data-value="{{ total_revenue|floatformat:2 }}">$0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Revenue</h5>
+                        <h3 class="counter" id="total_revenue" data-value="{{ total_revenue|floatformat:2 }}">$0</h3>
+                    </div>
+                    <i class="fa-solid fa-sack-dollar fa-2x"></i> <!-- Corrected icon -->
                 </div>
             </div>
         </div>
+        
 
         <!-- Total Discounts -->
         <div class="col-md-4 p-2">
             <div class="card bg-secondary text-white shadow">
-                <div class="card-body">
-                    <h5>Total Discounts</h5>
-                    <h3 class="counter" id="total_discounts" data-value="{{ total_discounts|floatformat:2 }}">$0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Discounts</h5>
+                        <h3 class="counter" id="total_discounts" data-value="{{ total_discounts|floatformat:2 }}">$0</h3>
+                    </div>
+                    <i class="fa-solid fa-percent fa-2x"></i> <!-- Added a relevant discount icon -->
                 </div>
             </div>
         </div>
+        
 
         <!-- Total Taxes -->
         <div class="col-md-4 p-2">
             <div class="card bg-info text-white shadow">
-                <div class="card-body">
-                    <h5>Total Taxes</h5>
-                    <h3 class="counter" id="total_taxes" data-value="{{ total_taxes|floatformat:2 }}">$0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Total Taxes</h5>
+                        <h3 class="counter" id="total_taxes" data-value="{{ total_taxes|floatformat:2 }}">$0</h3>
+                    </div>
+                    <i class="fa-solid fa-file-invoice-dollar fa-2x"></i> <!-- Added tax-related icon -->
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="row">
+        
         <!-- Low Stock Alert -->
         <div class="col-md-4 p-2">
             <div class="card bg-warning text-dark shadow">
-                <div class="card-body">
-                    <h5>Low Stock Medicines</h5>
-                    <h3 class="counter" id="low_stock_medicines" data-value="{{ low_stock_medicines }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Low Stock Medicines</h5>
+                        <h3 class="counter" id="low_stock_medicines" data-value="{{ low_stock_medicines }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-box-open fa-2x"></i> <!-- Added Low Stock Icon -->
                 </div>
             </div>
         </div>
@@ -107,9 +136,12 @@
         <!-- Expired Medicines -->
         <div class="col-md-4 p-2">
             <div class="card bg-danger text-white shadow">
-                <div class="card-body">
-                    <h5>Expired Medicines</h5>
-                    <h3 class="counter" id="expired_medicines" data-value="{{ expired_medicines }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Expired Medicines</h5>
+                        <h3 class="counter" id="expired_medicines" data-value="{{ expired_medicines }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-ban fa-2x"></i> <!-- Added Expired Medicine Icon -->
                 </div>
             </div>
         </div>
@@ -117,9 +149,12 @@
         <!-- Near Expiry -->
         <div class="col-md-4 p-2">
             <div class="card bg-warning text-dark shadow">
-                <div class="card-body">
-                    <h5>Near Expiry Medicines</h5>
-                    <h3 class="counter" id="near_expiry_medicines" data-value="{{ near_expiry_medicines }}">0</h3>
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <h5>Near Expiry Medicines</h5>
+                        <h3 class="counter" id="near_expiry_medicines" data-value="{{ near_expiry_medicines }}">0</h3>
+                    </div>
+                    <i class="fa-solid fa-hourglass-half fa-2x"></i> <!-- Added Near Expiry Icon -->
                 </div>
             </div>
         </div>

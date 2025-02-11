@@ -92,12 +92,13 @@
                 <a class="dropdown-item" href="{% url 'add_purchase_item' order_id=1 %}">Add Purchase Orders</a>
 
                 <a class="dropdown-item" href="{% url 'view_purchase_orders' %}">Purchase Orders</a>
-                {% if supplier.id %}
-                <a class="dropdown-item" href="{% url 'make_payment' supplier.id %}">Make Payment Orders</a>
-            {% else %}
-                <span class="dropdown-item text-muted">Make Payment Orders (Invalid Supplier)</span>
-            {% endif %}
-                <a class="dropdown-item" href="{% url 'view_payment_tracking' %}">Payment Tracking</a>  <!-- ✅ Fixed here -->
+                {% for supplier in suppliers %}
+    <a class="dropdown-item" href="{% url 'make_payment' supplier.id %}">Make Payment Orders</a>
+{% empty %}
+    <span class="dropdown-item text-muted">No Suppliers Available</span>
+{% endfor %}
+
+                <a class="dropdown-item" href="{% url 'view_payment_tracking' %}">Payment Tracking</a> 
             </div>
         </li>
         <li class="nav-item dropdown">
@@ -113,7 +114,7 @@
 
         </li>
         <li class="nav-item">
-            <a href="/logout/" class="nav-link text-dark bg-light">
+            <a href="#" class="nav-link text-dark bg-light">
                 <i class="fas fa-sign-out-alt mr-3 text-primary fa-fw"></i> Logout
             </a>
         </li>

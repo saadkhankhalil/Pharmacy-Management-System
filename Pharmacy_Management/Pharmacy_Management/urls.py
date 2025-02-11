@@ -19,9 +19,10 @@ from pharmacy.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', adminHome, name="adminhome"),
+    path('', dashboard, name="dashboard"),
 
     # Category URLs
     path('add-category/', add_category, name="add_category"),
@@ -58,7 +59,8 @@ urlpatterns = [
     path('purchases/add-item/<int:order_id>/', add_purchase_item, name="add_purchase_item"),
 
     # Payments
-    path('payments/make/<int:supplier_id>/', make_payment, name="make_payment"),
+    path('make-payment/<int:supplier_id>/', make_payment, name='make_payment'),
+
 
     path('payments/tracking/', view_payment_tracking, name="view_payment_tracking"),  # ✅ Added this line
 

@@ -12,6 +12,8 @@ from django.shortcuts import redirect
 from django.db.models import Sum
 from django.utils.timezone import now, timedelta
 from datetime import date, timedelta
+import pdfkit
+
 from .models import *
 
 
@@ -170,16 +172,26 @@ def sales_billing(request):
 
     return render(request, 'sales_billing.html', {'medicines': medicines})
 
+import logging
+logger = logging.getLogger(__name__)
 def generate_invoice(request, sale_id):
-    sale = get_object_or_404(Sale, id=sale_id)
-    sale_items = SaleItem.objects.filter(sale=sale)
+    try:
+        sale = get_object_or_404(Sale, id=sale_id)
+        sale_items = SaleItem.objects.filter(sale=sale)
 
-    html_content = render_to_string('invoice_template.html', {'sale': sale, 'sale_items': sale_items})
-    pdf = pdfkit.from_string(html_content, False)
+        html_content = render_to_string('invoice_template.html', {'sale': sale, 'sale_items': sale_items})
+        logger.debug("Invoice HTML generated successfully.")
 
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="invoice_{sale.id}.pdf"'
-    return response
+        pdf = pdfkit.from_string(html_content, False, configuration=PDFKIT_CONFIG)
+        logger.debug("PDF generated successfully.")
+
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="invoice_{sale.id}.pdf"'
+        return response
+
+    except Exception as e:
+        logger.error(f"Error generating invoice: {str(e)}")
+        return HttpResponse("Error generating invoice", status=500)
 
 def email_invoice(request, sale_id):
     sale = get_object_or_404(Sale, id=sale_id)
