@@ -1,0 +1,61 @@
+{% extends 'admin_base.html' %}
+
+{% block main %}
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Stock Reports</h5>
+
+        <!-- Expiry Alerts Section -->
+        <h6 class="mt-3">📅 Expiry Alerts (Next 30 Days)</h6>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Batch No</th>
+                    <th>Expiry Date</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in expiring_medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.batch_no }}</td>
+                    <td class="text-danger">{{ medicine.expiry_date }}</td>
+                    <td>{{ medicine.quantity }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No expiring medicines found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Low Stock Alerts Section -->
+        <h6 class="mt-3">⚠️ Low Stock Alerts (Below 10 Units)</h6>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Medicine Name</th>
+                    <th>Batch No</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medicine in low_stock_medicines %}
+                <tr>
+                    <td>{{ medicine.name }}</td>
+                    <td>{{ medicine.batch_no }}</td>
+                    <td class="text-warning">{{ medicine.quantity }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center">All medicines are sufficiently stocked</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'admin_base.html' %}
+{% block main %}
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    .card {
+        transition: transform 0.3s;
+    }
+    .card:hover {
+        transform: scale(1.05);
+    }
+    .icon {
+        font-size: 30px;
+        color: #fff;
+    }
+</style>
+
+<div class="container-fluid">
+    <h2 class="text-center my-3">Pharmacy Management Dashboard</h2>
+    <div class="row">
+        <!-- Total Medicines -->
+        <div class="col-md-3 p-2">
+            <div class="card bg-primary text-white shadow">
+                <div class="card-body">
+                    <h5>Total Medicines</h5>
+                    <h3 class="counter" id="total_medicines" data-value="{{ total_medicines }}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Categories -->
+        <div class="col-md-3 p-2">
+            <div class="card bg-success text-white shadow">
+                <div class="card-body">
+                    <h5>Total Categories</h5>
+                    <h3 class="counter" id="total_categories" data-value="{{ total_categories }}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Suppliers -->
+        <div class="col-md-3 p-2">
+            <div class="card bg-warning text-dark shadow">
+                <div class="card-body">
+                    <h5>Total Suppliers</h5>
+                    <h3 class="counter" id="total_suppliers" data-value="{{ total_suppliers }}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Sales -->
+        <div class="col-md-3 p-2">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    <h5>Total Sales</h5>
+                    <h3 class="counter" id="total_sales" data-value="{{ total_sales }}">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Revenue -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-dark text-white shadow">
+                <div class="card-body">
+                    <h5>Total Revenue</h5>
+                    <h3 class="counter" id="total_revenue" data-value="{{ total_revenue|floatformat:2 }}">$0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Discounts -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-secondary text-white shadow">
+                <div class="card-body">
+                    <h5>Total Discounts</h5>
+                    <h3 class="counter" id="total_discounts" data-value="{{ total_discounts|floatformat:2 }}">$0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Taxes -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-info text-white shadow">
+                <div class="card-body">
+                    <h5>Total Taxes</h5>
+                    <h3 class="counter" id="total_taxes" data-value="{{ total_taxes|floatformat:2 }}">$0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Low Stock Alert -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-warning text-dark shadow">
+                <div class="card-body">
+                    <h5>Low Stock Medicines</h5>
+                    <h3 class="counter" id="low_stock_medicines" data-value="{{ low_stock_medicines }}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Expired Medicines -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-danger text-white shadow">
+                <div class="card-body">
+                    <h5>Expired Medicines</h5>
+                    <h3 class="counter" id="expired_medicines" data-value="{{ expired_medicines }}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Near Expiry -->
+        <div class="col-md-4 p-2">
+            <div class="card bg-warning text-dark shadow">
+                <div class="card-body">
+                    <h5>Near Expiry Medicines</h5>
+                    <h3 class="counter" id="near_expiry_medicines" data-value="{{ near_expiry_medicines }}">0</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="text-center">Sales in the Last 7 Days</h5>
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Counter Animation -->
+<script>
+    function animateCounter(id, targetValue) {
+        let count = 0;
+        let speed = Math.ceil(targetValue / 100);  // Adjust speed based on value size
+        let element = document.getElementById(id);
+
+        let interval = setInterval(function() {
+            if (count >= targetValue) {
+                element.innerText = targetValue;  // Ensure exact value is displayed
+                clearInterval(interval);
+            } else {
+                count += speed;
+                element.innerText = count;
+            }
+        }, 20); // Adjust animation speed
+    }
+
+    // Run animation for each counter
+    document.addEventListener("DOMContentLoaded", function() {
+        let counters = document.querySelectorAll(".counter");
+        counters.forEach(counter => {
+            let targetValue = parseFloat(counter.dataset.value);
+            animateCounter(counter.id, targetValue);
+        });
+    });
+</script>
+
+<!-- Sales Chart -->
+<script>
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var salesChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [{% for sale in last_week_sales %} "{{ sale.date|date:'M d' }}", {% endfor %}],
+            datasets: [{
+                label: 'Sales ($)',
+                data: [{% for sale in last_week_sales %} {{ sale.total }}, {% endfor %}],
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

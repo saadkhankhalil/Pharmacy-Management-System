@@ -1,0 +1,39 @@
+{% extends 'admin_base.html' %}
+
+{% block main %}
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Profit & Loss Report</h5>
+
+        <!-- Filter Dropdown -->
+        <form method="GET" class="mb-3">
+            <label for="period"><strong>Select Period:</strong></label>
+            <select name="period" id="period" class="form-control" onchange="this.form.submit()">
+                <option value="daily" {% if selected_period == 'daily' %}selected{% endif %}>Daily</option>
+                <option value="weekly" {% if selected_period == 'weekly' %}selected{% endif %}>Weekly</option>
+                <option value="monthly" {% if selected_period == 'monthly' %}selected{% endif %}>Monthly</option>
+            </select>
+        </form>
+
+        <!-- Display Profit & Loss Summary -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Total Revenue</th>
+                    <th>Total Cost</th>
+                    <th>Profit / Loss</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>${{ total_revenue }}</td>
+                    <td>${{ total_cost }}</td>
+                    <td class="{% if profit_loss >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        ${{ profit_loss }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

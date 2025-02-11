@@ -61,6 +61,13 @@ urlpatterns = [
     path('payments/make/<int:supplier_id>/', make_payment, name="make_payment"),
 
     path('payments/tracking/', view_payment_tracking, name="view_payment_tracking"),  # ✅ Added this line
+
+    #Reports and Analytics
+    path('reports/sales/', sales_report, name='sales_report'),
+    path('reports/stock/', stock_report, name='stock_report'),
+    path('reports/profit-loss/', profit_loss_report, name='profit_loss_report'),
+    path("dashboard/", dashboard, name="dashboard"),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

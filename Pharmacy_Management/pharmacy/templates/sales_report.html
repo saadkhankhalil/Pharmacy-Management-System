@@ -1,0 +1,56 @@
+{% extends 'admin_base.html' %}
+
+{% block main %}
+<div class="card shadow">
+    <div class="card-body">
+        <h5 class="p-2" style="border-bottom: 2px solid orange;">Sales Report</h5>
+        
+        <!-- Filter Options -->
+        <form method="GET" class="mb-3">
+            <select name="filter" class="form-control w-auto d-inline">
+                <option value="daily" {% if filter_type == "daily" %}selected{% endif %}>Daily</option>
+                <option value="weekly" {% if filter_type == "weekly" %}selected{% endif %}>Weekly</option>
+                <option value="monthly" {% if filter_type == "monthly" %}selected{% endif %}>Monthly</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </form>
+
+        <!-- Sales Summary -->
+        <div class="alert alert-info">
+            <strong>Total Sales:</strong> ${{ total_sales }}
+        </div>
+
+        <!-- Sales Table -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Date</th>
+                    <th>Total Amount</th>
+                    <th>Discount</th>
+                    <th>Tax</th>
+                    <th>Final Amount</th>
+                    <th>Payment Method</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td>{{ sale.id }}</td>
+                    <td>{{ sale.date|date:"Y-m-d H:i" }}</td>
+                    <td>${{ sale.total_amount }}</td>
+                    <td>${{ sale.discount }}</td>
+                    <td>${{ sale.tax }}</td>
+                    <td><strong>${{ sale.final_amount }}</strong></td>
+                    <td>{{ sale.payment_method }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center">No sales found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
